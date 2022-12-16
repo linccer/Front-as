@@ -3,68 +3,69 @@
     const dispatch=createEventDispatcher();
 
     export let contentColors;   //background, title, field, fill
+    export let foodGoals;
+    export let foodValueToday;
 
+    //goals
+    let KCALgoal=foodGoals.KCALgoal;
+    let waterGoal=foodGoals.waterGoal;
+    let carbGoal= foodGoals.carbGoal;
+    let proteinGoal=foodGoals.proteinGoal;
+    let fatGoal=foodGoals.fatGoal;
 
+    //values
+    let carbValue=foodValueToday.carbValue;
+    let proteinValue=foodValueToday.proteinValue;
+    let fatValue=foodValueToday.fatValue;
+    let waterValue=foodValueToday.waterValue;
 
-    let KCALgoal=2400;
-    let waterGoal=1.9;
-
-    let carbGoal= 310;
-    let proteinGoal=150;
-    let fatGoal=60;
-
-    let carbValue=160;
-    let proteinValue=96;
-    let fatValue=32;
-
-    let waterValue=0.5;
-
+    //for display
     $: carbs=`${carbValue}g / ${carbGoal}g`;
     $: protein=`${proteinValue}g / ${proteinGoal}g`;
     $: fat=`${fatValue}g / ${fatGoal}g`;
 
+    //for picture fills
     $: carbCL= 100-(carbValue/carbGoal*100);               $:if (carbCL<0) carbCL=0;
     $: proteinCL=100-(proteinValue/proteinGoal*100);       $:if (proteinCL<0) proteinCL=0;
     $: fatCL =100-(fatValue/fatGoal*100);                  $:if (fatCL<0) fatCL=0;
     $: waterCL =100-(waterValue/waterGoal*100);            $:if (waterCL<0) waterCL=0;
 
-
-
-
+    //for other progress bars
     $: percentTOTALnutrition= (300-carbCL-proteinCL-fatCL)/3;
     $:if (percentTOTALnutrition > 100) percentTOTALnutrition=100;
-
-
-
-    let carbInput=0;
-    let proteinInput=0;
-    let fatInput=0;
-    let waterInput=0;
-
-    function addCarbs (){
-        carbValue= carbValue + Number(carbInput);
-        carbInput=0;}
-    function addProtein (){
-        proteinValue= proteinValue + Number(proteinInput);
-        proteinInput=0;}
-    function addFat (){
-        fatValue= fatValue + Number(fatInput);
-        fatInput=0;}
-    function addWater (){
-        waterValue= waterValue + Math.floor(Number(waterInput))/1000;
-        waterInput=0;}
-    
-    
-    
     $: percentKCAL=(proteinValue*4 + carbValue*4 + fatValue*9)/KCALgoal*100;        $:if (percentKCAL > 100) percentKCAL=100;
     $: percentWATER=waterValue/waterGoal*100;                                       $:if (percentWATER > 100) percentWATER=100;
     $: percentTOTAL=(percentKCAL+percentWATER)/2;
     $: if (percentTOTAL > 100) percentTOTAL=100;
 
+    //for inputs
+    let carbInput=0;
+    let proteinInput=0;
+    let fatInput=0;
+    let waterInput=0;
 
-
-
+    //input functions
+    function addCarbs (){
+        carbValue= carbValue + Number(carbInput);
+        carbInput=0;
+        dispatch('addCarbs', carbValue);}
+    function addProtein (){
+        proteinValue= proteinValue + Number(proteinInput);
+        proteinInput=0;
+        dispatch('addProtein', proteinValue);}
+    function addFat (){
+        fatValue= fatValue + Number(fatInput);
+        fatInput=0;
+        dispatch('addFat', fatValue);}
+    function addWater (){
+        waterValue= waterValue + Math.floor(Number(waterInput))/1000;
+        waterInput=0;
+        dispatch('addWater', waterValue);}
+    
 </script>
+
+
+
 
 <div class="content"
 style="--background: {contentColors.background};

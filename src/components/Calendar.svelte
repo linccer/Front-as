@@ -3,9 +3,10 @@
     import { createEventDispatcher } from "svelte";
     const dispatch=createEventDispatcher();
 
-    let weekRange= '07/12 - 07-18';
+    export let weekRange;
+    export let fitnessWeek;
 
-    let calendar= ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    let calendar= ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
 </script>
     
@@ -19,12 +20,19 @@
             <p class="subtitle">{weekRange}</p>
 
             <div class="content">
-                {#each calendar as day}
+                {#each calendar as day, index}
         
                 <div class="day">
 
                     <p class="d">{day}</p>
-                    <p>stuff</p>
+                    {#if fitnessWeek[index] !='Rest'}
+                    <img class="little" src="/img/bench-icon.png" alt="" >
+                    {:else}
+                    <img class="little" src="/img/bench-icon.png" alt="" style="visibility:hidden;" >
+                    {/if}
+
+
+                    <p>{fitnessWeek[index]}</p>
                 </div>
 
             {/each}
@@ -103,6 +111,7 @@
         display:flex;
         flex-direction: column;
         padding:0;
+        font-size: 14px;
     }
     
     .d{
@@ -113,4 +122,6 @@
         border-radius: 5px;
         padding-top:8%;
     }
+
+    .little{width: 50px; margin-left: 40px;}
     </style>

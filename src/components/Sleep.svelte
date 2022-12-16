@@ -3,34 +3,53 @@
 import { createEventDispatcher } from "svelte";
 const dispatch=createEventDispatcher();
 
+//import components
 import Tabs from "./Tabs.svelte";
 import SleepStats from "./SleepStats.svelte";
 
+//tabs
 const tabArr=['Yesterday', 'Today', ''];
 let activeTab='Today';
-
 const tabColors= {font:'white', background:'rgb(63,63,116)', active:'rgb(51,50,89)', activeFont:'white'};
-
-
-
 function changeTab(e){if(e.detail!='') activeTab=e.detail};
 
+//required data
+export let weekData;
+export let sleepStatsToday;
 
-
+//get current weekday
 const date = new Date();
 let weekday = date.getDay();    //0 - Sunday, 1 - Monday....
 if (weekday===0) weekday=7;
 
-let weekData= [1, 0, 0, 2, 2, 2, 2 ];
-
+//count how many days slept well
 let well=0;
-
 for (let a=0; a<weekday; a++){
 if (weekData[a]===1) well=well+1;
 }
 
-let bedtime=1380;
-let waketime=394;
+//update data
+function changeWake(e){dispatch('changeWake', e.detail);}
+function changeBed(e){dispatch('changeBed', e.detail)}
+function sleepStatus (e) {dispatch('sleepStatus', e.detail);
+        weekData[weekday-1]=e.detail;
+        well=0;
+        for (let a=0; a<weekday; a++){
+        if (weekData[a]===1) well=well+1;
+        }}
+
+
+
+
+//mark future days as inactive ( 2 )
+for (let a=weekday; a<7; a++){
+weekData[a]=2;
+}
+//
+
+
+
+//
 </script>
     
 <div style="--fontColor:{tabColors.font};">
@@ -47,7 +66,7 @@ let waketime=394;
 
             <div class="content">
                 {#if activeTab==='Today'}
-                <div class="sleepStatsContainer"> <SleepStats {bedtime} {waketime} /> </div>
+                <div class="sleepStatsContainer"> <SleepStats data={sleepStatsToday} on:changeWake={changeWake} on:changeBed={changeBed} on:sleepStatus={sleepStatus}/> </div>
                 <div class="weekdiv">
                     <div class="week1">
                         <p class="subtitle">This week:</p>

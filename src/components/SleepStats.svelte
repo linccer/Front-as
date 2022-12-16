@@ -1,6 +1,12 @@
 <script>
-    export let bedtime;
-    export let waketime;
+    import { createEventDispatcher } from "svelte";
+    const dispatch=createEventDispatcher();
+
+    export let data;
+
+    let bedtime= data.bedtime;
+    let waketime= data.waketime;
+    let goal = data.goal;
 
     let bh = Math.floor(bedtime/60);
     let bm = bedtime - (Math.floor(bedtime/60))*60;
@@ -10,33 +16,66 @@
     let wm = waketime - (Math.floor(waketime/60))*60;
     if (wm===0) wm='00';
 
-    let dh;
-    let dm;
-    if (bh > wh) {dh= (24-bh) + wh;}
-    else {dh= wh - bh;}
-    if (wm > bm) {dm= wm-bm;}
-    else {dh=dh-1; dm=(60-bm)+wm; }
+    let dh=0;
+    let dm=0;
+    $: if (Number(bh) > Number(wh)) {dh= (24-Number(bh)) + Number(wh);}
+    $: if (Number(bh)<=Number(wh)) {dh= Number(wh) - Number(bh);}
+    $: if (Number(wm) > Number(bm)) {dm= Number(wm)-Number(bm);}
+    $: if (Number(wm)<Number(bm)) {dm=(60-Number(bm))+Number(wm);}
+    $: if (Number(wm)<Number(bm) && Number(wh) != Number(bh)) {dh=Number(dh)-1;}
+    $: if (Number(wm)===Number(bm)) {dm=0;}
+    $: if (Number(dh) === -1) {dh=23};
 
-    let goal = 480;
+
+
+
     let gh = Math.floor(goal/60);
     let gm = goal - gh*60;
     if (gm===0) gm='00';
     let goaltext=` / ${gh}h ${gm}min`;
 
 
-    $: percent = Math.floor(100/goal*(dh*60+dm)) || 0;
+    $: percent = Math.floor(100/goal*(dh*60+dm)) || 0;  $: if (percent>100) percent=100;
+
+    $: if (percent >=80){dispatch('sleepStatus', 1);} 
+    $: if (percent <80){dispatch('sleepStatus', 0);} 
+
+
+    function changeBedtime (){
+       bedtime=Number(bh)*60+Number(bm);
+       dispatch('changeBed', bedtime);
+    }
+
+    function changeWaketime(){
+    waketime=Number(wh)*60+Number(wm);
+    dispatch('changeWake', waketime);
+    }
 
 
 
-    // hrs - Math.floor(bedtime/60)
-    // mins - bedtime - Math.floor(bedtime/60)
 </script>
 
 <div>
     <div class="container">
         
-        <div class="subdiv"> <p>Sleep at time</p> <h3>{bh}h {bm}min</h3> <img class= "decoIcon" src="/img/moon.png" alt=""> </div>
-        <div class="subdiv"> <p>Wake up time</p> <h3>{wh}h {wm}min</h3> <img class= "decoIcon" src="/img/sun.png" alt=""> </div>
+        <div class="subdiv">
+            <p>Sleep at time</p>
+            <h3>
+            <input bind:value={bh} on:change={()=>{changeBedtime()}} />h <span>_</span>
+            <input bind:value={bm} on:change={()=>{changeBedtime()}} />min
+            </h3>
+            <img class= "decoIcon" src="/img/moon.png" alt="">
+        </div>
+
+        <div class="subdiv">
+            <p>Wake up time</p>
+            <h3>
+            <input bind:value={wh} on:change={()=>{changeWaketime()}} />h <span>_</span>
+            <input bind:value={wm} on:change={()=>{changeWaketime()}} />min
+            </h3>
+            <img class= "decoIcon" src="/img/sun.png" alt="">
+        </div>
+
         <div class="subdiv"> <p>Sleep duration</p> <h3>{dh}h {dm}min<span>{goaltext}</span> </h3> </div>
         <div class="subdiv"> <p>Goal reached</p> <div class="percentBar">   <div class="percentBarFilled" style="width:{180*percent/100}px"></div>    </div><h3 id="percent"> {percent}% </h3> </div>
 
@@ -114,4 +153,15 @@ span{font-size: 10px;
     width: 55px;
     margin-left: 190px;
 }
+
+input{
+    outline: none;
+    width:28px;
+    background: none;
+    color:white;
+    font-family: "Press Start 2P";
+    border: none;
+}
+
+span{visibility: hidden;}
 </style>

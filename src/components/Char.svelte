@@ -3,31 +3,13 @@
     import { createEventDispatcher } from "svelte";
     const dispatch=createEventDispatcher();
 
-    import { onMount } from 'svelte';
-    import { onDestroy } from 'svelte';
-
-    // onMount(async () => {
-	// 	const res = await fetch(`/tutorial/api/album`);
-	// 	photos = await res.json();
-	// });
-
-    onMount (()=>{
-        console.log('char mount')
-    });
-    onDestroy (()=>{
-        console.log('char destroy')
-    })
-
+    export let username;
     export let gender;
-
-    let sportProg=50;
-    let sleepProg=30;
-    let foodProg=75;
-
-    let height=170;
-    let weight= 70;
-
-    let username='Petriukas';
+    export let sportProg;
+    export let sleepProg;
+    export let foodProg;
+    export let height;
+    export let weight;
     </script>
     
     <div>
@@ -43,14 +25,14 @@
                 <p class="smol">height</p>
                 <div class="field" >
 
-                    <input bind:value={height} />
+                    <input bind:value={height} on:change={()=>{dispatch('changeHeight', height)}}/>
                     <p class="unit">cm</p>
 
                 </div>
                 <p class="smol">weight</p>
                 <div class="field">
 
-                    <input bind:value={weight}/>
+                    <input bind:value={weight} on:change={()=>{dispatch('changeWeight', weight)}}/>
                     <p class="unit">kg</p>
 
                 </div>

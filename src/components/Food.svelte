@@ -3,19 +3,25 @@
     import { createEventDispatcher } from "svelte";
     const dispatch=createEventDispatcher();
 
+    //tabs
     import Tabs from "./Tabs.svelte";
     const tabArr=['Yesterday', 'Today', ''];
     let activeTab='Today';
+    function changeTab(e){if(e.detail!='') activeTab=e.detail};
 
+    //colors
     const tabColors= {font:'rgb(147,182,109)', background:'rgb(236,255,215)', active:'rgb(147,182,109)', activeFont:'white'};
     const contentColors={background:'white', title:'rgb(147,182,109)', field: 'rgb(216,235,177)', fill: 'rgb(173,196,132)'};
 
-
-    function changeTab(e){if(e.detail!='') activeTab=e.detail};
-
-
-
     import FoodStats from "./FoodStats.svelte";
+
+    export let foodGoals;
+    export let foodValueToday;
+
+    function addWater (e) {dispatch('addWater', e.detail);}
+    function addCarbs (e) {dispatch('addCarbs', e.detail);}
+    function addFat (e) {dispatch('addFat', e.detail);}
+    function addProtein (e) {dispatch('addProtein', e.detail);}
 </script>
     
 <div style="--fontColor:{tabColors.font};">
@@ -32,13 +38,10 @@
 
             <div class="content">
                 {#if activeTab==='Today'}
-                <FoodStats {contentColors} />
+                <FoodStats {contentColors} {foodGoals} {foodValueToday} on:addWater={addWater} on:addCarbs={addCarbs} on:addProtein={addProtein} on:addFat={addFat}/>
         
                 {:else if activeTab==='Yesterday'}
                 <p>Yesterday's food</p>
-
-                {:else if activeTab==='Week'}
-                <p>Food of the week</p>
         
                 {/if}
             </div>
